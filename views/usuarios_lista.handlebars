@@ -1,0 +1,48 @@
+{{! Este formulário inteligente serve tanto para CRIAR quanto para EDITAR }}
+<div class="form-container">
+    <h2>{{#if usuario}}Editar Usuário{{else}}Criar Novo Usuário{{/if}}</h2>
+    <form action="{{#if usuario}}/usuarios/editar/{{usuario.usuid}}{{else}}/usuarios{{/if}}" method="POST">
+
+        <div class="form-group">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" name="nome" value="{{usuario.usunome}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{usuario.usuemail}}" required>
+        </div>
+
+        {{#unless usuario}}
+        {{! O campo de senha só aparece na criação }}
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha" required>
+            </div>
+        {{/unless}}
+
+        <div class="form-group">
+            <label for="cargo">Cargo</label>
+            <select name="cargo" id="cargo" required>
+                <option value="" disabled selected>Selecione um cargo</option>
+                {{#each cargos}}
+                    <option value="{{this.cargid}}" {{#if (eq this.cargid ../usuario.usucargo)}}selected{{/if}}>{{this.cargnome}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="turma">Turma (apenas para alunos)</label>
+            <select name="turma" id="turma">
+                <option value="">Nenhuma</option>
+                {{#each turmas}}
+                    <option value="{{this.turmid}}" {{#if (eq this.turmid ../usuario.usuturma)}}selected{{/if}}>{{this.turnome}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">{{#if usuario}}Salvar Alterações{{else}}Criar Usuário{{/if}}</button>
+        </div>
+    </form>
+</div>

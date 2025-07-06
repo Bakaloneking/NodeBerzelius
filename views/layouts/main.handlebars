@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Berzelius - Gestão Laboratorial</title>
+    <link rel="stylesheet" href="/css/bEstilos02.css">
+
+    {{{_sections.styles}}}
+</head>
+<body>
+<div id="interface">
+    <header id="cabecalho">
+        <a id="logo" href="/">
+            <img id="icon" src="/img/ber500.png" alt="Berzelius logo"/>
+            <hgroup id="logo-titulo">
+                <h1>Berzelius</h1>
+                <h2>Gestão Laboratorial</h2>
+            </hgroup>
+        </a>
+        <nav id="menu">
+            <ul>
+                <li><a href="/"><img class="mIcone" src="/img/calendar_month_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" alt="icone calendario"/>Calendário</a></li>
+                <li><a href="/tabela"><img class="mIcone" src="/img/tabela-periodica.png" alt="icone tabela periodica" />Tabela Periódica</a></li>
+                <li><a href="/preparo"><img class="mIcone" src="/img/reacao-quimica.png" alt="icone soluçoes quimicas" />Soluções Quimicas</a></li>
+                <li><a href="/vidrarias"><img class="mIcone" src="/img/medicamento.png" alt="icone vidraria" />Vidrarias</a></li>
+
+                {{#if user}}
+                    <li class="user-info"><span>Olá, {{user.nome}}</span></li>
+                    <li><a href="/logout"><img class="mIcone" src="/img/logout_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" alt="icone logout"/>Sair</a></li>
+                {{else}}
+                    <li><a href="/login"><img class="mIcone" src="/img/login_25dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png" alt="icone login"/>Login</a></li>
+                {{/if}}
+            </ul>
+        </nav>
+    </header>
+
+    {{{body}}}
+
+    <footer id="rodape">
+        <p>Copyright &copy; 2025 - by Carlos Nascimento & Deborah Castro</p>
+    </footer>
+</div>
+
+<script src="/js/bFuncoes.js"></script>
+<script src="/js/data.js"></script>
+</body>
+</html>

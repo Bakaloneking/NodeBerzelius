@@ -1,0 +1,26 @@
+{{! Arquivo: views/preparo.handlebars }}
+{{#section 'styles'}}
+    <link rel="stylesheet" href="/css/bPreparo.css">
+{{/section}}
+
+<section id="corpo">
+    <article>
+        <h1 class="tituloTodasSubstancias">Preparo de Soluções</h1><br>
+
+        {{#if solucoes.length}}
+            <ul class="ulTodasSubstancias">
+                {{#each solucoes}}
+                    <li class="listaResultadoPesquisa">
+                        {{! O link agora é dinâmico, apontando para uma futura página de detalhes }}
+                        <a class="linkTodasSolucoes" href="/preparo/{{this.sol_id}}">
+                            {{this.sol_nome}}
+                        </a>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>Nenhuma solução cadastrada no momento.</p>
+        {{/if}}
+
+    </article>
+</section>

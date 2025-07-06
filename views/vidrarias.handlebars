@@ -1,0 +1,24 @@
+{{! Arquivo: views/vidrarias.handlebars }}
+{{#section 'styles'}}
+    <link rel="stylesheet" href="/css/bVidrarias.css">
+{{/section}}
+
+<section id="corpo">
+    {{#if vidrarias.length}}
+        <ol class="shelf">
+            {{#each vidrarias}}
+                <li class="image-container">
+                    {{! O link agora é dinâmico, apontando para uma futura página de detalhes }}
+                    <a href="/vidrarias/{{this.vid_id}}">
+                        {{! O caminho da imagem vem do banco de dados }}
+                        <img src="{{this.vid_imagem_path}}" alt="{{this.vid_nome}}">
+                        {{! O nome vem do banco de dados }}
+                        <p>{{this.vid_nome}}</p>
+                    </a>
+                </li>
+            {{/each}}
+        </ol>
+    {{else}}
+        <p>Nenhuma vidraria cadastrada no momento.</p>
+    {{/if}}
+</section>

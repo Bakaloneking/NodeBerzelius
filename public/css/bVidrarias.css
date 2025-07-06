@@ -1,0 +1,139 @@
+@charset "UTF-8";
+
+
+#corpo {
+    display: flex; /* Use flexbox to align children side by side */
+    justify-content: space-between; /* Space between the aside and article */
+    align-items: flex-start; /* Align items at the start */
+    margin: 20px; /* Add margin around the section */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+ol {
+    display: grid;
+    grid-template-columns: repeat(var(--grupos), minmax(0, 1fr));
+}
+
+.shelf {
+    display: flex;
+    justify-content: center; /* Center the shelf */
+    gap: 20px; /* Space between images */
+    padding: 20px; /* Padding around the shelf */
+    background-color: #fff; /* White background for the shelf */
+    border-radius: 10px; /* Rounded corners */
+}
+
+.image-container {
+    background-color: #fff; /* White background for each image container */
+    border: 1px solid #ddd; /* Light border for separation */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow */
+    text-align: center; /* Center text */
+    transition: transform 0.3s; /* Smooth scaling effect */
+}
+
+.image-container:hover {
+    transform: scale(1.05); /* Scale up on hover */
+}
+
+.image-container img {
+    width: 50%; /* Full width for images */
+    height: auto; /* Maintain aspect ratio */
+    border-bottom: 1px solid #ddd; /* Border below the image */
+}
+
+.image-container p {
+    padding: 10px; /* Padding for description */
+    color: #333; /* Dark text color */
+    font-size: 0.9em; /* Font size for description */
+}
+
+aside#vidraria {
+    display: block;
+    height: 100%;
+    margin: auto;
+}
+
+aside img {
+    max-width: 25px; /* Or set a specific maximum width */
+    height: auto;    /* Maintains aspect ratio */
+}
+
+#vidraria section {
+    list-style: none;
+    border-radius: 12px;
+    width: 120px;
+    height: 140px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    box-sizing: border-box;
+    position: relative;
+    color: black;
+    cursor: default;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.3s ease;
+}
+
+#vidraria section:hover {
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+#vidraria section em.nomeVidraria {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    color: black;
+    user-select: text;
+    max-width: 100%;
+}
+
+/* General styles for the article */
+#conteudo {
+    flex: 1; /* Fill available space */
+    max-width: 800px; /* Limit the width for better readability */
+    margin-left: 20px; /* Spacing between aside and article */
+    padding: 20px; /* Add padding around the content */
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Styles for the paragraph */
+#textoVidro {
+    font-family: 'Arial', sans-serif; /* Use a clean, sans-serif font */
+    font-size: 1.1em; /* Slightly larger font size for readability */
+    line-height: 1.6; /* Increase line height for better spacing */
+    color: #333; /* Dark gray text color for contrast */
+    text-align: justify; /* Justify text for a cleaner look */
+    margin: 0; /* Remove default margin */
+}
+
+/* Optional: Add a hover effect for the paragraph */
+#textoVidro:hover {
+    background-color: #e0f7fa; /* Light blue background on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Optional: Add a citation style */
+#textoVidro::after {
+    font-size: 0.9em; /* Smaller font size for citations */
+    color: #888; /* Light gray color for citations */
+    display: block; /* Display citations on a new line */
+    margin-top: 10px; /* Space above citations */
+}
+
+@media (max-width: 600px) {
+    article img {
+        max-width: 80%;
+    }
+}

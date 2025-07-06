@@ -1,0 +1,66 @@
+{{! Arquivo: views/relAulas.handlebars }}
+
+<style>
+    /* Estilos para deixar a tabela mais legível */
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-family: sans-serif;
+    }
+    .report-table th, .report-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    .report-table th {
+        background-color: #0056b3; /* Um tom de azul */
+        color: white;
+        font-weight: bold;
+    }
+    .report-table tr:nth-child(even) {
+        background-color: #f2f2f2; /* Efeito "zebra" para facilitar a leitura */
+    }
+    .report-table tr:hover {
+        background-color: #ddd;
+    }
+    .no-data-message {
+        color: #777;
+        font-style: italic;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container">
+    <h1>Relatório Detalhado de Aulas</h1>
+    <hr>
+
+    {{#if aulas}}
+        <table class="report-table">
+            <thead>
+            <tr>
+                <th>Laboratório</th>
+                <th>Professor</th>
+                <th>Turma</th>
+                <th>Tema da Aula</th>
+                <th>Dia</th>
+                <th>Hora</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#each aulas}}
+                <tr>
+                    <td>{{this.Laboratorio}}</td>
+                    <td>{{this.Professor}}</td>
+                    <td>{{this.Turma}}</td>
+                    <td>{{this.Tema}}</td>
+                    <td>{{this.Dia}}</td>
+                    <td>{{this.Hora}}</td>
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    {{else}}
+        <p class="no-data-message">Nenhuma aula encontrada para exibir no relatório.</p>
+    {{/if}}
+</div>

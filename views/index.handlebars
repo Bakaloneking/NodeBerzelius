@@ -1,0 +1,56 @@
+{{! Arquivo: views/index.handlebars }}
+
+{{#section 'styles'}}
+{{! A página inicial não precisa de CSS extra, bEstilos02.css já cuida dela }}
+{{/section}}
+
+<section id="corpo">
+    <div id="data">
+        <h2 class="date">Horários da Semana</h2>
+    </div>
+
+    {{! O select de laboratórios pode ser dinâmico também se você passar a lista na rota }}
+    <div id="laboratorio">
+        <label for="cLab">Filtrar por Laboratório:</label>
+        <select name="tLab" id="cLab">
+            <option value="todos">Todos</option>
+            {{! Loop para laboratórios viria aqui }}
+        </select>
+    </div>
+
+    <div id="calendario">
+        <table class="dwm_main" id="week_main">
+            <thead>
+            <tr>
+                <th>Período</th>
+                {{#each diasDaSemana}}
+                    <th class="diaSemana">{{this.nome}}<br><span class="data-js"></span></th>
+                {{/each}}
+            </tr>
+            </thead>
+            <tbody id="cedulas">
+            {{#each horariosPadrao}}
+                <tr>
+                    <th>{{this.hp_descricao}}</th>
+                    {{#each ../diasDaSemana}}
+                    {{! Usando lookup para encontrar a aula para este dia e horário }}
+                        {{#with (lookup ../calendario this.id)}}
+                            {{#with (lookup this ../hp_id)}}
+                                <td class="marcada">
+                                    <a href="#">
+                                        <p>{{this.professor}}<br/>{{this.turnome}}<br/>{{this.disc_nome}}</p>
+                                    </a>
+                                </td>
+                            {{else}}
+                                <td class="new"></td>
+                            {{/with}}
+                        {{else}}
+                            <td class="new"></td>
+                        {{/with}}
+                    {{/each}}
+                </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>

@@ -1,0 +1,64 @@
+{{! Arquivo: views/dashboard_aluno.handlebars }}
+{{#section 'styles'}}
+    <link rel="stylesheet" href="/css/bUser.css">
+{{/section}}
+<style>
+    /* Adicionando alguns estilos para a nova tabela de horários */
+    .schedule-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .schedule-table th, .schedule-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .schedule-table th { background-color: #f2f2f2; font-weight: bold; }
+</style>
+
+<section id="corpo">
+    <aside>
+        <div class="user-card">
+            <img src="/img/aluno-avatar.png" alt="Foto do Aluno" class="user-photo">
+            <div class="user-info">
+                {{! Dados dinâmicos do aluno logado }}
+                <h2 class="user-name">{{aluno.usunome}}</h2>
+                <p class="user-email">{{aluno.usuemail}}</p>
+                {{#if aluno.usuturma}}
+                    <p class="user-bio">Aluno da turma {{aluno.usuturma}}</p>
+                {{else}}
+                    <p class="user-bio">Aluno (sem turma definida)</p>
+                {{/if}}
+            </div>
+        </div>
+    </aside>
+    <article id="conteudo">
+        <h1>Minha Grade de Horários</h1>
+
+        {{#if horarios.length}}
+            <table class="schedule-table">
+                <thead>
+                <tr>
+                    <th>Dia da Semana</th>
+                    <th>Horário</th>
+                    <th>Disciplina</th>
+                    <th>Professor</th>
+                    <th>Laboratório</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each horarios}}
+                    <tr>
+                        <td>
+                            {{#if (eq this.ht_dia_semana 1)}}Segunda-feira{{/if}}
+                            {{#if (eq this.ht_dia_semana 2)}}Terça-feira{{/if}}
+                            {{#if (eq this.ht_dia_semana 3)}}Quarta-feira{{/if}}
+                            {{#if (eq this.ht_dia_semana 4)}}Quinta-feira{{/if}}
+                            {{#if (eq this.ht_dia_semana 5)}}Sexta-feira{{/if}}
+                        </td>
+                        <td>{{this.Horario}}</td>
+                        <td>{{this.Disciplina}}</td>
+                        <td>{{this.Professor}}</td>
+                        <td>{{this.Laboratorio}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        {{else}}
+            <p>Ainda não há horários definidos para a sua turma.</p>
+        {{/if}}
+    </article>
+</section>

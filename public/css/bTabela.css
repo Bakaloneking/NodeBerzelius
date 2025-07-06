@@ -1,0 +1,354 @@
+@charset "UTF-8";
+
+:root{
+
+    --row-height: calc((var(--quadrado) - var(--margem2)) / var(--property-rows));
+    --property-rows: 6;
+    --lacuna-na-grade: calc(var(--espaço-da-grade) * var(--encolher-barralateral) / var(--grupos));
+    --fixedgridgap: var(--lacuna-na-grade);
+    --espaço-da-grade: calc(5 * var(--proporcaoTela));
+    --vw-padrao: 1.8;
+    --encolher-barralateral: 1;
+    --fonte-minima: calc(var(--vw-padrao) * var(--minimo) / var(--encolher-barralateral) / 100);
+    --proporcaoTela: min(1vw, 1.51vh + (var(--grupos) - 18) * 0.095vh);
+    --grupos: 19;
+    --periodos: 1em;
+    --propriedades-linhas: 6;
+    --corBasePreta: 0, 0, 0;
+    --corDaBorda: rgba(var(--corBasePreta), 0.10);
+    --altura-linha: calc((var(--quadrado) - var(--margem2)) / var(--propriedades-linhas));
+    --umPorCentoDaLargura: 1vw;
+    /*aqui faz o calculo do (19-19) / 18 + 1  ou  (33-19)/18 + 1*/
+    --fatorGrupos: calc(1 + (var(--grupos) - 19) / 19);
+    --minimo: 680px;
+    --margem: 0.1rem;
+    --margem2: calc(var(--margem) * 2);
+    --larguraTela-quadrado: 20;
+    --almofada-elemento: 0.1em;
+    --quadrado: calc(var(--larguraTela-quadrado) * var(--proporcaoTela));
+
+    /***** cores de fundo  *******/
+    --naoMetais: hsl(100, 100%, 80%);
+    /* --naoMetais: #9AFF6B;*/
+    --metaisAlcalinos: hsl(254, 100%, 92%);
+    /*--metaisAlcalinos: #E59EFF;*/
+    --metaisAlcalinosTerrosos: hsl(36, 100%, 83%);
+    /*--metaisAlcalinosTerrosos: #FFAB2E;*/
+    --transicaoExterna: hsl(200, 100%, 83%);
+    /* --transicaoExterna: #8AD8FF;*/
+    --halogenios: hsl(252, 100%, 85%);
+    --representativos: hsl(0, 100%, 85%);
+    --semiMetais: hsl(53, 100%, 80%);
+    --gasesNobres: #ffd6ff;
+    --lantanideos: hsl(55, 67%, 80%);
+    --actinideos: hsl(170, 100%, 92%);
+    --desconhecidos: hsl(0, 0%, 93%);
+    /**** cores da series   *****/
+    --serieNaoMetais: hsla(100, 100%, 80%, 0.589);
+}
+
+#corpo {
+    display: flex; /* Use flexbox to align children side by side */
+    justify-content: space-between; /* Space between the aside and article */
+    align-items: flex-start; /* Align items at the start */
+    margin: 20px; /* Add margin around the section */
+}
+
+.tabelaCompleta{
+    order:0;
+    overflow: auto;
+}
+
+article {
+    background-color: #f9f9f9; /* Light background for the article */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding around the article */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+/********* DENTRO DO ARTICLE (Inicio) **********/
+
+ol{
+    display: grid;
+    grid-template-columns: repeat(var(--grupos), minmax(0, 1fr));
+    grid-gap: var(--lacuna-na-grade);
+    padding: var(--margem) var(--margem2) var(--margem2) var(--margem);
+    background-color: white;
+    border-radius: 8px; /* Rounded corners for the grid */
+}
+
+
+
+ol.principal > li, a.lEle {
+    line-height: 1;
+    white-space: nowrap;
+    padding: var(--almofada-elemento) 0;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Center content */
+    border-radius: 5px; /* Rounded corners for list items */
+
+}
+
+ol.principal > li:hover{
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+ol.principal > li strong {
+    font-size: 12px; /* Tamanho da fonte para o NÚMERO ATÔMICO (o número em negrito) */
+}
+
+ol.principal > li .simboloQuimico {
+    font-size: 20px; /* Tamanho da fonte para o SÍMBOLO QUÍMICO (H, He, Li, etc.) */
+}
+
+.vazio {
+    cursor: default;
+    visibility: hidden;
+}
+
+.familia, .periodo {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+    perspective: 1000px;
+    text-align: center;
+    color: var(--grupos);
+    line-height: 1;
+    font-size: 0.7em;
+    font-style: normal;
+    font-weight: normal;
+}
+
+.familia::after, .periodo::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) rotateY(90deg);
+    background-color: #f0f0f0;
+    color: #000;
+    white-space: normal;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.5s ease-in-out;
+    z-index: 99;
+    font-size: max(1em, 10px);
+    width: max-content;
+    max-width: 180px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    word-break: break-word;
+    pointer-events: none;
+}
+
+
+.familia:hover::after, .periodo:hover::after {
+    transform: translateX(-50%) translateY(8px) rotateY(0deg);
+    opacity: 1;
+    visibility: visible;
+}
+
+li.nMetais {
+    background: var(--naoMetais);
+    filter: none;
+    transition: border-color 0.5s ease-in-out;
+}
+
+li.nobres {
+    background: var(--gasesNobres);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.alcalinos {
+    background: var(--metaisAlcalinos);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.terrosos {
+    background: var(--metaisAlcalinosTerrosos);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.metais {
+    background: var(--transicaoExterna);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.sMetais {
+    background: var(--semiMetais);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.representativos {
+    background: var(--representativos);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.lant {
+    background: var(--lantanideos);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.acti {
+    background: var(--actinideos);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li.halogenios{
+    background: var(--halogenios);
+    filter: none;
+    transition: filter 0.3s;
+}
+
+li > a.lEle {
+    color: initial; /* Use the default link color */
+    text-decoration: none; /* Remove underline */
+    font-weight: normal; /* Set font weight to normal */
+    font-style: normal; /* Set font style to normal */
+}
+
+/*li a:hover {*/
+/*    color: initial; !* Maintain the same color on hover *!*/
+/*    text-decoration: none; !* Keep the text without underline *!*/
+/*    font-weight: normal; !* Keep font weight the same *!*/
+/*    font-style: normal; !* Keep font style the same *!*/
+/*}*/
+
+li > a.lEle:visited {
+    color: initial; /* Maintain the same color on hover */
+    text-decoration: none; /* Keep the text without underline */
+    font-weight: normal; /* Keep font weight the same */
+    font-style: normal; /* Keep font style the same */
+}
+
+aside#elemento {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    display: block;
+    margin: auto;
+}
+
+#elemento section{
+    list-style: none;
+    background: var(--naoMetais);
+    border: 2px solid #388e3c;
+    border-radius: 12px;
+    width: 120px;
+    height: 140px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    box-sizing: border-box;
+    position: relative;
+    color: black;
+    cursor: default;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.3s ease;
+}
+
+#elemento section:hover{
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+#elemento section strong{
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-weight: 700;
+    font-size: 20px;
+    color: black;
+}
+
+#elemento section .simboloQuimico{
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    user-select: text;
+}
+
+#elemento section em.nomesMedios {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    color: black;
+    user-select: text;
+    max-width: 100%;
+}
+
+/* General styles for the article */
+#conteudo {
+    flex: 1;
+    max-width: 800px; /* Limit the width for better readability */
+    margin-left: 20px; /* Center the article on the page */
+    padding: 20px; /* Add padding around the content */
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Styles for the paragraph */
+#textoElemento {
+    font-family: 'Arial', sans-serif; /* Use a clean, sans-serif font */
+    font-size: 1.1em; /* Slightly larger font size for readability */
+    line-height: 1.6; /* Increase line height for better spacing */
+    color: #333; /* Dark gray text color for contrast */
+    text-align: justify; /* Justify text for a cleaner look */
+    margin: 0; /* Remove default margin */
+}
+
+/* Optional: Add a hover effect for the paragraph */
+#textoElemento:hover {
+    background-color: #e0f7fa; /* Light blue background on hover */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Optional: Add a citation style */
+#textoElemento::after {
+    font-size: 0.9em; /* Smaller font size for citations */
+    color: #888; /* Light gray color for citations */
+    display: block; /* Display citations on a new line */
+    margin-top: 10px; /* Space above citations */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    ol {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+    }
+    #elemento section {
+        width: 80px;
+        height: 100px;
+        font-size: 0.9em;
+    }
+    #elemento section .simboloQuimico {
+        font-size: 40px;
+        margin-top: 10px;
+        margin-bottom: 4px;
+    }
+    #elemento section em.nomesMedios {
+        font-size: 14px;
+    }
+}
+
+
+

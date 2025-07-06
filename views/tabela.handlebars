@@ -1,0 +1,11 @@
+{{! Arquivo: views/tabela.handlebars }}
+{{#section 'styles'}}
+    <link rel="stylesheet" href="/css/bTabela.css">
+{{/section}}
+
+<section id="corpo">
+    <article class="tabelaCompleta">
+        {{! Chama o nosso helper para desenhar a tabela, passando a lista de elementos }}
+        {{{ renderTabelaPeriodica elementos }}}
+    </article>
+</section>

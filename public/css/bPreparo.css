@@ -1,0 +1,285 @@
+
+
+body {
+    font-family: 'Segoe UI', Roboto, Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.tituloTodasSubstancias {
+    font-size: 2em;
+    padding: 10px;
+    margin: 0 0 20px 0;
+    color: #191970;
+    text-align: center;
+}
+
+.ulTodasSubstancias {
+    list-style: none;
+    margin: 0;
+}
+
+.listaResultadoPesquisa {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px;
+    transition: background-color 0.3s;
+}
+
+.listaResultadoPesquisa:hover {
+    background-color: rgba(24, 62, 95, 0.1);
+}
+
+.linkTodasSolucoes {
+    text-decoration: none;
+    color: rgb(0, 76, 143);
+    font-size: 1.2em;
+}
+
+.linkTodasSolucoes:hover {
+    color: rgb(0, 102, 204);
+}
+
+.linkTodasSolucoes{
+    text-decoration: none;
+    color: #191970;
+}
+
+.txtResultadosEncontrados{
+    font-family:  'Segoe Ui', Roboto, Arial, Helvetica, serif, sans-serif;
+    font-size: max(1.6em, 20px);
+    margin: 0;
+}
+
+.linkTodasSolucoesRelacionadas{
+    text-decoration: none;
+    color: black;
+    padding: 6px;
+    cursor: pointer;
+    text-align: left;
+    background-color: transparent;
+}
+
+.linkTodasSolucoesRelacionadas:hover{
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.linkTodasSolucoesRelacionadas:link{
+    text-decoration: none;
+}
+
+.listaResultadoPesquisa:hover{
+    background-color: rgba(24, 62, 95, 0.3);
+    text-decoration: none;
+}
+
+.numeracaoDaPaginacao {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    margin: 20px 0;
+    padding: 0;
+}
+
+.numerosDaPaginacao {
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    background-color: rgb(24, 62, 95);
+    color: white;
+    margin: 0 5px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.numerosDaPaginacao:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.numerosDaPaginacao a {
+    color: white;
+    text-decoration: none;
+}
+
+.numerosDaPaginacao a:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.numerosDaPaginacaoSelecionado {
+    background-color: green;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.paginacao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.paginacao div{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: max(1em, 14px);
+    text-decoration: none;
+}
+
+.paginacao div:not(.atual),
+.paginacao div.atual div{
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+}
+
+.paginacao div:not(.atual):hover,
+.paginacao div.atual div:hover,
+.paginacao div.atual div:active {
+    color:rgb(4, 50, 255)
+}
+
+.classesDePreparo {
+    margin: 20px 0; /* Space around the preparation classes */
+}
+
+.listaPreparos {
+    list-style: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+}
+
+.preparo {
+    background-color: #ffffff; /* White background for each preparation */
+    border: 1px solid #ddd; /* Light border for separation */
+    border-radius: 5px; /* Rounded corners */
+    margin: 10px 0; /* Space between preparations */
+    padding: 15px; /* Padding inside preparations */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#concentracaoSolucao {
+    margin-bottom: 20px; /* Space below concentration solution */
+}
+
+.infografico {
+    margin-bottom: 15px; /* Space below infographic */
+}
+
+.concentracoesEvolume,
+.tituloInfografico {
+    font-size: 1.5em; /* Increased font size for the title */
+    color: #191970; /* Dark blue color */
+    margin: 0 0 10px 0; /* Margin below the title */
+}
+
+.resultadoVolume2,
+.resultadoMassa{
+    text-decoration: underline;
+    text-decoration-style: solid;
+}
+
+#infograficogrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Two columns for infographic steps */
+    gap: 15px; /* Space between grid items */
+}
+
+/* para 3 desenhos */
+#infograficogrid3{
+    display: grid;
+    grid-template-columns:repeat(3, 1fr);
+    background-color: white;
+}
+
+.imagensPassoAPasso {
+    width: 100%; /* Full width for images */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px; /* Rounded corners for images */
+}
+
+.textoInfografico {
+    font-size: 1em; /* Font size for infographic text */
+    color: black; /* Black text */
+    padding: 10px; /* Padding inside infographic text */
+    background-color: #f9f9f9; /* Light background for text */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Smooth background transition */
+}
+
+.textoInfografico:hover {
+    background-color: #e0e0e0; /* Darker background on hover */
+}
+
+.numeracaoInfografico {
+    display: inline-block;
+    width: 30px; /* Fixed width for numbering */
+    height: 30px; /* Fixed height for numbering */
+    padding: 5px;
+    border-radius: 50%; /* Circular shape */
+    background-color: green; /* Green background */
+    color: white; /* White text */
+    text-align: center; /* Center text */
+    margin-right: 5px; /* Space to the right */
+}
+
+.tituloeconcentracao {
+    font-size: 1.2em; /* Font size for concentration title */
+    font-weight: bold; /* Bold text */
+    color: black; /* Black text */
+    margin: 10px 0; /* Space above and below */
+}
+
+.procedimento {
+    background-color: #dcf9dc; /* Light green background */
+    padding: 10px; /* Padding inside procedure */
+    border-radius: 5px; /* Rounded corners */
+    line-height: 1.5; /* Increase line height for readability */
+    margin: 10px 0; /* Space between procedures */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #infograficogrid {
+        grid-template-columns: 1fr; /* Single column for smaller screens */
+    }
+    .tituloInfografico {
+        font-size: 1.3em; /* Smaller title font size */
+    }
+    .textoInfografico {
+        font-size: 0.9em; /* Smaller text size */
+    }
+    .numeracaoInfografico {
+        width: 25px; /* Smaller width for numbering */
+        height: 25px; /* Smaller height for numbering */
+    }
+    .tituloTodasSubstancias {
+        font-size: 1.5em;
+    }
+    .listaResultadoPesquisa {
+        font-size: 1em;
+        padding: 8px;
+    }
+    .linkTodasSolucoes {
+        font-size: 1em;
+    }
+    .numerosDaPaginacao, .numerosDaPaginacaoSelecionado {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+    .procedimento {
+        font-size: 1em;
+        padding: 8px;
+    }
+}

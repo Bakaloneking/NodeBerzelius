@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+#corpo {
+    display: flex; /* Use flexbox to align children side by side */
+    justify-content: space-between; /* Space between the aside and article */
+    align-items: flex-start; /* Align items at the start */
+    margin: 20px; /* Add margin around the section */
+}
+
+a {
+    text-decoration: none;
+}
+
+.user-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    width: 300px;
+}
+
+.user-photo {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+}
+
+.user-info {
+    margin-top: 15px;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.user-email {
+    color: #666;
+}
+
+.user-bio {
+    font-size: 0.9em;
+    color: #333;
+}
+
+article {
+    background-color: #f9f9f9; /* Light background for the article */
+    width:  555px;
+    height: auto;
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding around the article */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+article > h1 {
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+ol{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: space-between;
+    padding: 0;
+    border-radius: 8px; /* Rounded corners for the grid */
+}
+
+ol > li {
+    margin: 5px;
+    padding: 10px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: black 1px solid;
+    align-items: center; /* Center content */
+    border-radius: 5px; /* Rounded corners for list items */
+    cursor: pointer;
+}
+
+ol > li:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-upload-box {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+#pdf-upload {
+    margin-top: 10px;
+}

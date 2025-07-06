@@ -1,0 +1,19 @@
+.btn-acao {
+    display: inline-block;
+    background-color: white;
+    color: blue;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-acao:hover {
+    background-color: #f0f0f0;
+    color: #003366;
+  }
+  
