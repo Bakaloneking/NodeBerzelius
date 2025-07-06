@@ -5,13 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Cargos, { foreignKey: 'usucargo', as: 'cargo' });
             this.belongsTo(models.Turmas, { foreignKey: 'usuturma', as: 'turmaDoAluno' });
-            this.belongsToMany(models.Turmas, {
-                through: 'professor_turmas',
-                foreignKey: 'pt_professor_usuid_fk',
-                otherKey: 'pt_turma_id_fk',
-                as: 'turmasDoProfessor'
-            });
-            this.hasMany(models.HorarioTurma, { foreignKey: 'ht_professor_usuid_fk', as: 'horariosDoProfessor' });
+            this.hasMany(models.Aulas, { foreignKey: 'aula_professor_usuid_fk', as: 'aulasLecionadas' });
             this.hasMany(models.Laboratorios, { foreignKey: 'lab_resp_usuid_fk', as: 'laboratoriosResponsaveis' });
         }
         static async verificarLogin(email, senha) {
