@@ -1,7 +1,4 @@
-{{! Arquivo: views/index.handlebars }}
-
 {{#section 'styles'}}
-{{! A página inicial não precisa de CSS extra, bEstilos02.css já cuida dela }}
 {{/section}}
 
 <section id="corpo">
@@ -9,12 +6,12 @@
         <h2 class="date">Horários da Semana</h2>
     </div>
 
-    {{! O select de laboratórios pode ser dinâmico também se você passar a lista na rota }}
     <div id="laboratorio">
         <label for="cLab">Filtrar por Laboratório:</label>
         <select name="tLab" id="cLab">
-            <option value="todos">Todos</option>
-            {{! Loop para laboratórios viria aqui }}
+            {{#each laboratorios}}
+                <option value="{{this.labid}}">{{this.labnome}}</option>
+            {{/each}}
         </select>
     </div>
 
@@ -31,21 +28,20 @@
             <tbody id="cedulas">
             {{#each horariosPadrao}}
                 <tr>
-                    <th>{{this.hp_descricao}}</th>
+                    <th>{{this.hp_hora_inicio}} - {{this.hp_hora_fim}}</th>
                     {{#each ../diasDaSemana}}
-                    {{! Usando lookup para encontrar a aula para este dia e horário }}
-                        {{#with (lookup ../calendario this.id)}}
-                            {{#with (lookup this ../hp_id)}}
-                                <td class="marcada">
-                                    <a href="#">
-                                        <p>{{this.professor}}<br/>{{this.turnome}}<br/>{{this.disc_nome}}</p>
-                                    </a>
-                                </td>
-                            {{else}}
-                                <td class="new"></td>
-                            {{/with}}
+                        {{#with (lookup (lookup ../calendario this.id) ../hp_id)}}
+                            <td class="marcada" data-lab-id="{{this.ht_laboratorio_id_fk}}">
+                                <a href="#">
+                                    <p>
+                                        <strong>{{this.disciplina}}</strong><br/>
+                                        {{this.professor}}<br/>
+                                        <small>{{this.turnome}}</small>
+                                    </p>
+                                </a>
+                            </td>
                         {{else}}
-                            <td class="new"></td>
+                            <td class="new" data-dia="{{this.id}}" data-horario="{{../hp_id}}"></td>
                         {{/with}}
                     {{/each}}
                 </tr>
@@ -54,3 +50,12 @@
         </table>
     </div>
 </section>
+
+{{#section 'scripts'}}
+{{! Embeda os dados do servidor em uma variável JavaScript }}
+<script>
+    const agendamentos = {{{agendamentosJSON}}};
+</script>
+{{! Carrega o nosso novo script que controlará o calendário }}
+<script src="/js/calendario.js"></script>
+{{/section}}

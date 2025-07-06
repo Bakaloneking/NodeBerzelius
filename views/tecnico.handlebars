@@ -16,14 +16,25 @@
 <section id="corpo">
     <aside>
         <div class="user-card">
-            {{#if tecnico.usufoto_perfil}}
-                <img src="/uploads/avatars/{{tecnico.usufoto_perfil}}" alt="Foto de {{tecnico.usunome}}" class="user-photo">
+            {{#if user.foto_perfil}}
+                <img src="/uploads/avatars/{{user.foto_perfil}}" alt="Foto de {{user.nome}}" class="user-photo">
             {{else}}
-                <img src="/img/tecnico-avatar.png" alt="Foto Padrão" class="user-photo">
+                {{#if (eq user.cargo 1)}}
+                    <img src="/img/ber500.png" alt="Foto Padrão de Técnico" class="user-photo">
+                {{else if (eq user.cargo 2)}}
+                    <img src="/img/professor-avatar.png" alt="Foto Padrão de Professor" class="user-photo">
+                {{else}}
+                    <img src="/img/aluno-avatar.png" alt="Foto Padrão de Aluno" class="user-photo">
+                {{/if}}
             {{/if}}
             <div class="user-info">
+                <p class="user-bio">
+                    {{#if (eq user.cargo 1)}}Técnico de Laboratório{{/if}}
+                    {{#if (eq user.cargo 2)}}Professor{{/if}}
+                    {{#if (eq user.cargo 3)}}Aluno{{/if}}
+                </p>
                 <h2 class="user-name">{{user.nome}}</h2>
-                <p class="user-bio">Técnico de Laboratório</p>
+                <p class="user-email">{{user.email}}</p>
             </div>
         </div>
     </aside>
@@ -42,8 +53,7 @@
                     <thead><tr><th>Nome</th><th>Cargo ID</th></tr></thead>
                     <tbody>
                     {{#each usuarios}}
-                    {{! A query nesta rota do dashboard agora já filtra por usuid > 1 }}
-                        <tr><td>{{this.usunome}}</td><td>{{this.usucargo}}</td></tr>
+                    <tr><td>{{this.usunome}}</td><td>{{this.cargo.cargnome}}</td></tr>
                     {{/each}}
                     </tbody>
                 </table>

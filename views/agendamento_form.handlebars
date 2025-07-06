@@ -1,0 +1,85 @@
+<style>
+    /* Seus estilos para o formulário */
+    .form-container { max-width: 600px; margin: 20px auto; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; }
+    .form-container h2 { text-align: center; color: #333; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    .form-group button { width: 100%; padding: 12px; background-color: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+</style>
+<section id="corpo">
+    <div class="form-container">
+        <h2>Agendamento de Nova Aula</h2>
+        <form action="/aulas" method="POST">
+            <div class="form-group">
+                <label for="professor_id">Professor</label>
+                {{#if (eq user.cargo 2)}}
+                    <p><strong>{{user.nome}}</strong></p>
+                    <input type="hidden" name="professor_id" value="{{user.id}}">
+                {{else}}
+                    <select name="professor_id" id="professor_id" required>
+                        <option value="" disabled selected>Selecione um professor</option>
+                        {{#each professores}}
+                            <option value="{{this.usuid}}">{{this.usunome}}</option>
+                        {{/each}}
+                    </select>
+                {{/if}}
+            </div>
+
+            <div class="form-group">
+                <label for="disciplina_id">Disciplina</label>
+                <select name="disciplina_id" id="disciplina_id" required>
+                    <option value="" disabled selected>Selecione uma disciplina</option>
+                    {{#each disciplinas}}
+                        <option value="{{this.disc_id}}">{{this.disc_nome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="laboratorio_id">Laboratório</label>
+                <select name="laboratorio_id" id="laboratorio_id" required>
+                    <option value="" disabled selected>Selecione um laboratório</option>
+                    {{#each laboratorios}}
+                        <option value="{{this.labid}}">{{this.labnome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="turma_id">Turma</label>
+                <select name="turma_id" id="turma_id" required>
+                    <option value="" disabled selected>Selecione uma turma</option>
+                    {{#each turmas}}
+                        <option value="{{this.turmid}}">{{this.turnome}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cTema">Tema da Aula</label>
+                <textarea name="tema" id="cTema" placeholder="Descreva o conteúdo da aula"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="cData">Data da Aula (entre 2 e 30 dias)</label>
+                <select name="data" id="cData" required>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="horario_id">Horário</label>
+                <select name="horario_id" id="horario_id" required>
+                    <option value="" disabled selected>Selecione um horário</option>
+                    {{#each horariosPadrao}}
+                        <option value="{{this.hp_id}}">{{this.hp_descricao}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit">Agendar Aula</button>
+            </div>
+        </form>
+    </div>
+</section>

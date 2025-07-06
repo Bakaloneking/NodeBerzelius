@@ -12,16 +12,25 @@
 <section id="corpo">
     <aside>
         <div class="user-card">
-            <img src="/img/aluno-avatar.png" alt="Foto do Aluno" class="user-photo">
-            <div class="user-info">
-                {{! Dados dinâmicos do aluno logado }}
-                <h2 class="user-name">{{aluno.usunome}}</h2>
-                <p class="user-email">{{aluno.usuemail}}</p>
-                {{#if aluno.usuturma}}
-                    <p class="user-bio">Aluno da turma {{aluno.usuturma}}</p>
+            {{#if user.foto_perfil}}
+                <img src="/uploads/avatars/{{user.foto_perfil}}" alt="Foto de {{user.nome}}" class="user-photo">
+            {{else}}
+                {{#if (eq user.cargo 1)}}
+                    <img src="/img/ber500.png" alt="Foto Padrão de Técnico" class="user-photo">
+                {{else if (eq user.cargo 2)}}
+                    <img src="/img/professor-avatar.png" alt="Foto Padrão de Professor" class="user-photo">
                 {{else}}
-                    <p class="user-bio">Aluno (sem turma definida)</p>
+                    <img src="/img/aluno-avatar.png" alt="Foto Padrão de Aluno" class="user-photo">
                 {{/if}}
+            {{/if}}
+            <div class="user-info">
+                <p class="user-bio">
+                    {{#if (eq user.cargo 1)}}Técnico de Laboratório{{/if}}
+                    {{#if (eq user.cargo 2)}}Professor{{/if}}
+                    {{#if (eq user.cargo 3)}}Aluno{{/if}}
+                </p>
+                <h2 class="user-name">{{user.nome}}</h2>
+                <p class="user-email">{{user.email}}</p>
             </div>
         </div>
     </aside>
