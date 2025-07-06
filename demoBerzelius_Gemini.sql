@@ -94,15 +94,6 @@ CREATE TABLE `usuarios` (
   CONSTRAINT `fk_usuarios_turma` FOREIGN KEY (`usuturma`) REFERENCES `turmas` (`turmid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `professor_turmas`;
-CREATE TABLE `professor_turmas` (
-  `pt_professor_usuid_fk` INT UNSIGNED NOT NULL, -- Chave estrangeira para o ID do professor
-  `pt_turma_id_fk` INT UNSIGNED NOT NULL,        -- Chave estrangeira para o ID da turma
-  PRIMARY KEY (`pt_professor_usuid_fk`, `pt_turma_id_fk`),
-  CONSTRAINT `fk_pt_professor` FOREIGN KEY (`pt_professor_usuid_fk`) REFERENCES `usuarios` (`usuid`) ON DELETE CASCADE,
-  CONSTRAINT `fk_pt_turma` FOREIGN KEY (`pt_turma_id_fk`) REFERENCES `turmas` (`turmid`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 DROP TABLE IF EXISTS `laboratorios`;
 CREATE TABLE `laboratorios` (
   `labid` INT UNSIGNED NOT NULL,
@@ -114,22 +105,29 @@ CREATE TABLE `laboratorios` (
   CONSTRAINT `fk_lab_responsavel` FOREIGN KEY (`lab_resp_usuid_fk`) REFERENCES `usuarios` (`usuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `horario_turma`;
-CREATE TABLE `horario_turma` (
-  `ht_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `ht_turma_id_fk` INT UNSIGNED NOT NULL,
-  `ht_disciplina_id_fk` INT UNSIGNED NOT NULL,
-  `ht_professor_usuid_fk` INT UNSIGNED NOT NULL,
-  `ht_laboratorio_id_fk` INT UNSIGNED NOT NULL,
-  `ht_dia_semana` TINYINT NOT NULL,              -- 1=Segunda, 2=Terça, etc.
-  `ht_horario_padrao_id_fk` VARCHAR(10) NOT NULL, -- <-- Referência para a tabela de horários
-  PRIMARY KEY (`ht_id`),
-  CONSTRAINT `fk_ht_turma` FOREIGN KEY (`ht_turma_id_fk`) REFERENCES `turmas` (`turmid`),
-  CONSTRAINT `fk_ht_disciplina` FOREIGN KEY (`ht_disciplina_id_fk`) REFERENCES `disciplinas` (`disc_id`),
-  CONSTRAINT `fk_ht_professor` FOREIGN KEY (`ht_professor_usuid_fk`) REFERENCES `usuarios` (`usuid`),
-  CONSTRAINT `fk_ht_laboratorio` FOREIGN KEY (`ht_laboratorio_id_fk`) REFERENCES `laboratorios` (`labid`),
-  CONSTRAINT `fk_ht_horario_padrao` FOREIGN KEY (`ht_horario_padrao_id_fk`) REFERENCES `horarios_padrao` (`hp_id`)
+DROP TABLE IF EXISTS `aulas`;
+CREATE TABLE `aulas` (
+  `aula_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `aula_data` DATE NOT NULL,                         -- A data específica da aula
+  `aula_horario_padrao_id_fk` VARCHAR(10) NOT NULL,  -- O ID do slot de horário (ex: 'M1')
+  `aula_turma_id_fk` INT UNSIGNED NOT NULL,
+  `aula_disciplina_id_fk` INT UNSIGNED NOT NULL,
+  `aula_professor_usuid_fk` INT UNSIGNED NOT NULL,
+  `aula_laboratorio_id_fk` INT UNSIGNED NOT NULL,
+  `aula_tema` TEXT NULL,
+  `aula_observacoes` TEXT NULL,
+  `aula_createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`aula_id`),
+  -- Chave única para evitar conflitos: não pode haver duas aulas na mesma data, horário e local.
+  UNIQUE KEY `uk_conflito_horario` (`aula_data`, `aula_horario_padrao_id_fk`, `aula_laboratorio_id_fk`),
+  -- Chaves estrangeiras
+  CONSTRAINT `fk_aula_turma` FOREIGN KEY (`aula_turma_id_fk`) REFERENCES `turmas` (`turmid`),
+  CONSTRAINT `fk_aula_disciplina` FOREIGN KEY (`aula_disciplina_id_fk`) REFERENCES `disciplinas` (`disc_id`),
+  CONSTRAINT `fk_aula_professor` FOREIGN KEY (`aula_professor_usuid_fk`) REFERENCES `usuarios` (`usuid`),
+  CONSTRAINT `fk_aula_laboratorio` FOREIGN KEY (`aula_laboratorio_id_fk`) REFERENCES `laboratorios` (`labid`),
+  CONSTRAINT `fk_aula_horario_padrao` FOREIGN KEY (`aula_horario_padrao_id_fk`) REFERENCES `horarios_padrao` (`hp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 DROP TABLE IF EXISTS `elemento`;
 CREATE TABLE `elemento` (
@@ -157,17 +155,6 @@ CREATE TABLE `elemento` (
 --
 -- Tabelas Dependentes (Nível 2)
 --
-DROP TABLE IF EXISTS `sessoes_aula`;
-CREATE TABLE `sessoes_aula` (
-  `sa_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `sa_horario_id_fk` INT UNSIGNED NOT NULL, 
-  `sa_data` DATE NOT NULL,                  
-  `sa_tema_especifico` TEXT NULL,           
-  `sa_observacoes` TEXT NULL,               
-  `sa_created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`sa_id`),
-  CONSTRAINT `fk_sa_horario` FOREIGN KEY (`sa_horario_id_fk`) REFERENCES `horario_turma` (`ht_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `camaelet`;
 CREATE TABLE `camaelet` (
@@ -600,6 +587,16 @@ INSERT INTO `laboratorios` (`labid`, `labnome`) VALUES (3, 'ORGÂNICA');
 /*!40000 ALTER TABLE `laboratorios` ENABLE KEYS */;
 UNLOCK TABLES;
 
+LOCK TABLES `disciplinas` WRITE;
+/*!40000 ALTER TABLE `disciplinas` DISABLE KEYS */;
+-- Inserção dos dados especificando as colunas
+INSERT INTO `disciplinas` (`disc_nome`, `disc_codigo`) VALUES ('QUIMICA ANALÍTICA', 'DQAQA');
+INSERT INTO `disciplinas` (`disc_nome`, `disc_codigo`) VALUES ('FÍSICO-QUÍMICA', 'DQAFQ');
+INSERT INTO `disciplinas` (`disc_nome`, `disc_codigo`) VALUES ('QUIMICA ORGÂNICA', 'DQAQO');
+/*!40000 ALTER TABLE `disciplinas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 -- Na SEÇÃO 6: INSERÇÃO DE DADOS (SEEDING)
 
 LOCK TABLES `vidrarias` WRITE;
@@ -657,7 +654,9 @@ CALL sp_add_usuario('Leticia',3,240,'2024@ifam.edu.br','alun');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
--- Inserção de dados de usuários de exemplo
+UPDATE `usuarios` SET `usufoto_perfil` = 'kakashi.png' WHERE `usuid` = 11;
+UPDATE `usuarios` SET `usufoto_perfil` = 'girafales.png' WHERE `usuid` = 12;
+
 LOCK TABLES `elemento` WRITE;
 CALL sp_add_elemento('Hidrogênio', 'H', 0, -259.14, -252.87);
 CALL sp_add_elemento('Hélio', 'He', 2, -272.20, -268.93);
