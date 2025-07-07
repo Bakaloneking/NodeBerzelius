@@ -9,6 +9,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const flash = require('connect-flash');
 const {Op} = db.Sequelize;
 
 //  Config
@@ -66,7 +67,6 @@ const {Op} = db.Sequelize;
                                 <a class="lEle" href="/elemento/${elemento.eleid}">
                                     <strong>${elemento.eleid}</strong>
                                     <div class="simboloQuimico">${elemento.elesimbolo}</div>
-                                    <em class="nomesMedios" data-dados="${serieNome}">${elemento.elenome}</em>
                                 </a>
                              </li>`;
                             } else {
@@ -90,8 +90,7 @@ const {Op} = db.Sequelize;
                             <a class="lEle" href="/elemento/${elemento.eleid}">
                                 <strong>${elemento.eleid}</strong>
                                 <div class="simboloQuimico">${elemento.elesimbolo}</div>
-                                <em class="nomesMedios" data-dados="${elemento.serie.serdescricao}">${elemento.elenome}</em>
-                            </a>
+                                </a>
                          </li>`;
                         }
                     }
@@ -108,8 +107,7 @@ const {Op} = db.Sequelize;
                             <a class="lEle" href="/elemento/${elemento.eleid}">
                                 <strong>${elemento.eleid}</strong>
                                 <div class="simboloQuimico">${elemento.elesimbolo}</div>
-                                <em class="nomesMedios" data-dados="${elemento.serie.serdescricao}">${elemento.elenome}</em>
-                            </a>
+                                </a>
                          </li>`;
                         }
                     }
@@ -126,6 +124,14 @@ const {Op} = db.Sequelize;
                 },
                 lookup: function(obj, field) {
                     return obj && obj[field];
+                },
+                dashboardUrl: function(cargoId) {
+                    switch (cargoId) {
+                        case 1: return '/tecnico';
+                        case 2: return '/professor';
+                        case 3: return '/aluno';
+                        default: return '/';
+                    }
                 }
             }
         }));
@@ -136,6 +142,7 @@ const {Op} = db.Sequelize;
         app.use(bodyParser.json());
     //  Cookie Parser
     app.use(cookieParser());
+    app.use(express.static(path.join(__dirname, 'public')));
     app.use(session({
         secret: 'CHAVE',
         resave: false,
@@ -146,9 +153,14 @@ const {Op} = db.Sequelize;
     app.use((req,res,next)=>{
         res.locals.user = req.session.user || null;
         next();
-    })
-    // Define a pasta 'public' como o local dos arquivos estáticos (CSS, JS, imagens)
-        app.use(express.static(path.join(__dirname, 'public')));
+    });
+    app.use(flash());
+    app.use((req, res, next) => {
+        res.locals.user = req.session.user || null;
+        res.locals.success_msg = req.flash('success_msg');
+        res.locals.error_msg = req.flash('error_msg');
+        next();
+    });
 
 
 // Middlewares de Autenticação
@@ -167,7 +179,8 @@ const {Op} = db.Sequelize;
             if(cargosPermitidos.includes(req.session.user.cargo)){
                 return next();
             }
-            res.status(403).send('Acesso Negado');
+            req.flash('error_msg', 'Acesso Negado: você não tem permissão para acessar esta página.');
+            res.redirect('/');
     }
 }
 
@@ -185,34 +198,42 @@ const {Op} = db.Sequelize;
 
 app.get('/', async (req, res) => {
     try {
-        const [horariosPadrao, agendamentos] = await Promise.all([
-            db.HorariosPadrao.findAll({
+        const hoje = new Date();
+        const inicioSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay() + 1)); // Inicia na Segunda
+        const fimSemana = new Date(inicioSemana);
+        fimSemana.setDate(inicioSemana.getDate() + 5); // Termina no Sabado
+        const [laboratorios, horariosPadrao, agendamentos] = await Promise.all([
+            db.Laboratorios.findAll({
                 raw: true,
-                order: [['hp_hora_inicio', 'ASC']]
+                order: [['labnome', 'ASC']]
             }),
-            db.sequelize.query(
-                `SELECT ht.ht_dia_semana, ht.ht_horario_padrao_id_fk, u.usunome AS professor, t.turnome, d.disc_nome 
-                FROM horario_turma ht
-                JOIN usuarios u ON ht.ht_professor_usuid_fk = u.usuid
-                JOIN turmas t ON ht.ht_turma_id_fk = t.turmid
-                JOIN disciplinas d ON ht.ht_disciplina_id_fk = d.disc_id`,
-                { type: Sequelize.QueryTypes.SELECT }
-            )
+            db.HorariosPadrao.findAll({ raw: true, order: [['hp_hora_inicio', 'ASC']]
+            }),
+            db.Aulas.findAll({
+                where: {
+                    aula_data: { // Filtra apenas as aulas desta semana
+                        [Op.between]: [inicioSemana, fimSemana]
+                    }
+                }
+            })
         ]);
+
         const calendario = {};
         agendamentos.forEach(aula => {
-            const dia = aula.ht_dia_semana;
-            const horaId = aula.ht_horario_padrao_id_fk;
-            if (!calendario[dia]) calendario[dia] = {};
-            calendario[dia][horaId] = aula;
+            const dia = new Date(aula.aula_data + 'T00:00:00').getDay();
+            const diaDaSemana = dia === 0 ? 6 : dia;
+            const horaId = aula.aula_horario_padrao_id_fk;
+            if (!calendario[diaDaSemana]) calendario[diaDaSemana] = {};
+            calendario[diaDaSemana][horaId] = aula.get({ plain: true });
         });
 
         res.render('index', {
-            layout: 'main',
-            horariosPadrao: horariosPadrao,
-            calendario: calendario,
+            laboratorios,
+            horariosPadrao,
+            calendario,
+            agendamentosJSON: JSON.stringify(agendamentos),
             diasDaSemana: [
-                {id: 7, nome: 'DOM'}, {id: 1, nome: 'SEG'}, {id: 2, nome: 'TER'},
+                {id: 1, nome: 'SEG'}, {id: 2, nome: 'TER'},
                 {id: 3, nome: 'QUA'}, {id: 4, nome: 'QUI'}, {id: 5, nome: 'SEX'}, {id: 6, nome: 'SÁB'}
             ]
         });
@@ -222,10 +243,15 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-        res.render('login');
+    const { redirect } = req.query;
+    if (redirect ) {
+        req.session.redirectTo = redirect;
+    }
+    res.render('login');
     })
 
 app.post('/login', async (req, res) => {
+    try {
         const {email, senha} = req.body;
         const usuario = await db.Usuarios.verificarLogin(email, senha);
 
@@ -233,26 +259,33 @@ app.post('/login', async (req, res) => {
             req.session.user = {
                 id: usuario.usuid,
                 nome: usuario.usunome,
-                cargo: usuario.usucargo
+                cargo: usuario.usucargo,
+                foto_perfil: usuario.usufoto_perfil,
+                email: usuario.usuemail
             };
 
-            switch (usuario.usucargo) {
-                case 1:
-                    res.redirect('/tecnico');
-                    break;
-                case 2:
-                    res.redirect('/professor');
-                    break;
-                case 3:
-                    res.redirect('/aluno');
-                    break;
-                default:
-                    res.redirect('/');
+            let redirectUrl = req.session.redirectTo || null;
+            delete req.session.redirectTo;
+
+            if (!redirectUrl) {
+                switch (usuario.usucargo) {
+                    case 1: redirectUrl = '/tecnico'; break;
+                    case 2: redirectUrl = '/professor'; break;
+                    case 3: redirectUrl = '/aluno'; break;
+                    default: redirectUrl = '/';
+                }
             }
+
+            return res.json({success: true, redirectUrl: redirectUrl});
+
         } else {
-            res.send("Email ou senha incorretos. <a href='/login'> Tentar novamente</a>")
+            return res.status(401).json({success: false, message: 'Email ou senha incorretos.'});
         }
-    });
+    } catch (erro) {
+        console.error('Erro na rota de login:', erro);
+        return res.status(500).json({success: false, message: 'Erro interno no servidor.'});
+    }
+});
 
 app.get('/logout', (req, res) => {
             req.session.destroy(err => {
@@ -266,26 +299,29 @@ app.get('/logout', (req, res) => {
 app.get('/tecnico', checkRole([1]), async (req, res) => {
     try {
 
-        const tecnicoId = req.session.user.id;
-
         const [todosUsuarios, todosItensInventario] = await Promise.all([
             db.Usuarios.findAll({
-                raw: true,
-                where: { usuid: {[Op.gt]: 1 }},
+                where: { usucargo: {[Op.gt]: 0}},
+                include: [{
+                    model: db.Cargos,
+                    as: 'cargo',
+                    attributes: ['cargnome'],
+                }],
                 order: [['usunome', 'ASC']]
             }),
             db.LaboratorioInventario.findAll({
                 include: [{
-                    model: Substancias,
+                    model: db.Substancias,
                     as: 'substancia',
                     attributes: ['sub_nome']
                 }],
                 order: [['inv_id', 'DESC']]
             })
         ]);
+        const usuariosSimples = todosUsuarios.map(user => user.get({ plain: true }));
         const inventarioSimples = todosItensInventario.map(item => item.get({ plain: true }));
         res.render('tecnico', {
-            usuarios: todosUsuarios,
+            usuarios: usuariosSimples,
             inventario: inventarioSimples
         });
     } catch (erro) {
@@ -299,28 +335,46 @@ app.get('/professor', checkRole([2]), async (req, res) => {
 
         const professorId = req.session.user.id;
 
-        const queryHorarios = `
-            SELECT 
-                ht.ht_dia_semana,
-                hp.hp_descricao AS Horario,
-                d.disc_nome AS Disciplina,
-                t.turnome AS Turma,
-                l.labnome AS Laboratorio
-            FROM horario_turma AS ht
-            JOIN disciplinas AS d ON d.disc_id = ht.ht_disciplina_id_fk
-            JOIN turmas AS t ON t.turmid = ht.ht_turma_id_fk
-            JOIN laboratorios AS l ON l.labid = ht.ht_laboratorio_id_fk
-            JOIN horarios_padrao AS hp ON hp.hp_id = ht.ht_horario_padrao_id_fk
-            WHERE ht.ht_professor_usuid_fk = :professor_id
-            ORDER BY ht.ht_dia_semana, hp.hp_hora_inicio;
+        const queryAulasDaSemana = `
+            SELECT
+                a.aula_data,
+                hp.hp_descricao AS horario,
+                d.disc_nome AS disciplina,
+                t.turnome AS turma,
+                l.labnome AS laboratorio,
+                DAYOFWEEK(a.aula_data) as dia_da_semana_num
+            FROM aulas AS a
+                     JOIN disciplinas AS d ON d.disc_id = a.aula_disciplina_id_fk
+                     JOIN turmas AS t ON t.turmid = a.aula_turma_id_fk
+                     JOIN laboratorios AS l ON l.labid = a.aula_laboratorio_id_fk
+                     JOIN horarios_padrao AS hp ON hp.hp_id = a.aula_horario_padrao_id_fk
+            WHERE
+                a.aula_professor_usuid_fk = :professor_id AND
+                a.aula_data >= CURDATE()
+            ORDER BY a.aula_data, hp.hp_hora_inicio;
         `;
 
-        const horarios = await db.sequelize.query(queryHorarios, {
-            replacements: {professor_id: professorId},
-            type: Sequelize.QueryTypes.SELECT
+        const aulas = await db.sequelize.query(queryAulasDaSemana, {
+            replacements: {
+                professor_id: professorId
+            },
+            type: db.Sequelize.QueryTypes.SELECT
         });
 
-        res.render('professor', {horarios: horarios});
+        const dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+        const aulasFormatadas = aulas.map(aula => {
+            const dataObj = new Date(aula.aula_data + 'T00:00:00');
+            const dia = String(dataObj.getDate()).padStart(2, '0');
+            const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+            const ano = dataObj.getFullYear();
+            return {
+            ...aula,
+            data_formatada: `${dia}/${mes}/${ano}`,
+            dia_semana_nome: dias[dataObj.getDay()]
+            }
+        });
+
+        res.render('professor', { aulas: aulasFormatadas });
     } catch (erro) {
         res.status(500).send("Erro ao carregar dados do professor: " + erro);
     }
@@ -336,25 +390,39 @@ app.get('/aluno', checkRole([3]), async (req, res) => {
         }
 
         const queryHorarios = `
-            SELECT ht.ht_dia_semana,
-                   hp.hp_descricao AS Horario,
-                   d.disc_nome     AS Disciplina,
-                   u.usunome       AS Professor,
-                   l.labnome       AS Laboratorio
-            FROM horario_turma AS ht
-                     JOIN disciplinas AS d ON d.disc_id = ht.ht_disciplina_id_fk
-                     JOIN usuarios AS u ON u.usuid = ht.ht_professor_usuid_fk
-                     JOIN laboratorios AS l ON l.labid = ht.ht_laboratorio_id_fk
-                     JOIN horarios_padrao AS hp ON hp.hp_id = ht.ht_horario_padrao_id_fk
-            WHERE ht.ht_turma_id_fk = :turma_id
-            ORDER BY ht.ht_dia_semana, hp.hp_hora_inicio;
+            SELECT
+                a.aula_data,
+                hp.hp_descricao AS Horario,
+                d.disc_nome     AS Disciplina,
+                u.usunome       AS Professor,
+                l.labnome       AS Laboratorio
+            FROM aulas AS a
+                     JOIN disciplinas AS d ON d.disc_id = a.aula_disciplina_id_fk
+                     JOIN usuarios AS u ON u.usuid = a.aula_professor_usuid_fk
+                     JOIN laboratorios AS l ON l.labid = a.aula_laboratorio_id_fk
+                     JOIN horarios_padrao AS hp ON hp.hp_id = a.aula_horario_padrao_id_fk
+            WHERE
+                a.aula_turma_id_fk = :turma_id AND
+                a.aula_data >= CURDATE() -- Mostra apenas aulas de hoje em diante
+            ORDER BY a.aula_data, hp.hp_hora_inicio;
         `;
 
         const horarios = await db.sequelize.query(queryHorarios, {
             replacements: {turma_id: aluno.usuturma},
             type: db.Sequelize.QueryTypes.SELECT
         });
-        res.render('aluno', {aluno: aluno, horarios: horarios});
+
+        const dias = [ "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+        const horariosFormatados = horarios.map(aula => {
+            const dataObj = new Date(aula.aula_data + 'T00:00:00');
+            return {
+                ...aula,
+                data_formatada: dataObj.toLocaleDateString('pt-BR', {timeZone: 'UTC'}),
+                dia_semana_nome: dias[dataObj.getDay()]
+            }
+        });
+
+        res.render('aluno', { aluno: aluno, horarios: horariosFormatados });
     } catch (erro) {
         res.status(500).send("Erro ao carregar o aluno: " + erro);
     }
@@ -499,6 +567,27 @@ app.get('/tabela', async (req, res) => {
     }
 });
 
+app.get('/api/elementos/:id', async (req, res) => {
+    try {
+        const elementoId = req.params.id;
+        const elemento = await db.Elemento.findByPk(elementoId, {
+            include: [
+                { model: db.Serie, as: 'serie' },
+                { model: db.Estafisi, as: 'estadoFisico' }
+            ]
+        });
+
+        if (elemento) {
+            res.json(elemento); // Se encontrou, responde com os dados em JSON
+        } else {
+            res.status(404).json({ error: 'Elemento não encontrado' });
+        }
+    } catch (erro) {
+        console.error("Erro ao buscar elemento:", erro);
+        res.status(500).json({ error: 'Erro interno no servidor' });
+    }
+});
+
 app.get('/preparo', async (req, res) => {
     try {
         const todasAsSolucoes = await db.Solucoes.findAll({
@@ -525,92 +614,84 @@ app.get('/vidrarias', async (req, res) => {
    }
 });
 
-app.get("/relatorioAulas", checkAuthenticated, async (req, res)=> {
+app.get('/aulas/nova', checkRole([1, 2]), async (req, res) => {
     try {
-        const horarios = await db.HorarioTurma.listarHorariosComDetalhes(); // Chama o método estático
-        res.render('relAulas', { aulas: horarios });
-    } catch(erro) {
-        res.status(500).send("Ocorreu um erro ao gerar o relatório: " + erro);
-    }
-    });
+        const loggedInUser = req.session.user;
+        let professores = [];
 
-app.get('/cadAulas', checkRole([1,2]), async (req, res) => {
-        try {
-            const [laboratorios, turmas, professores, disciplinas, horarios] = await Promise.all([
-                db.Laboratorios.findAll({ raw: true, order: [['labnome', 'ASC']] }),
-                db.Turmas.findAll({ raw: true, order: [['turnome', 'ASC']] }),
-                db.Usuarios.findAll({ raw: true, where: { usucargo: 2 }, order: [['usunome', 'ASC']] }),
-                db.Disciplinas.findAll({ raw: true, order: [['disc_nome', 'ASC']] }),
-                db.HorariosPadrao.findAll({ raw: true, order: [['hp_hora_inicio', 'ASC']] })
-            ]);
-            res.render('formulario', {
-                laboratorios, turmas, professores, disciplinas, horarios
+        // Se for um técnico, busca a lista de todos os professores.
+        if (loggedInUser.cargo === 1) {
+            professores = await db.Usuarios.findAll({
+                raw: true,
+                where: { usucargo: 2 }, // Apenas cargo de Professor
+                order: [['usunome', 'ASC']]
             });
-        } catch(erro){
-            res.send("Houve um erro ao carregar o formulário: " + erro);
-        };
-    });
+        }
 
-app.post('/agendar-horario', checkRole([1, 2]), async (req, res) => { // <-- ROTA ATUALIZADA
-    try {
-        // Renomeie os `name` no seu formulário para estes:
-        const { turma, disciplina, professor, laboratorio, dia_semana, horario_padrao } = req.body;
-        await db.HorarioTurma.create({
-            ht_turma_id_fk: turma,
-            ht_disciplina_id_fk: disciplina,
-            ht_professor_usuid_fk: professor,
-            ht_laboratorio_id_fk: laboratorio,
-            ht_dia_semana: dia_semana,
-            ht_horario_padrao_id_fk: horario_padrao
-        });
-        res.redirect('/'); // Redireciona para o calendário para ver o resultado
-    } catch (erro) {
-        res.send("Houve um erro ao agendar o horário: " + erro);
-    }
-});
-
-
-app.get("/relatorioAulas", checkAuthenticated, async (req, res) => { // <-- ROTA ATUALIZADA
-    try {
-        // Você precisa de uma função que faça a query com JOINs, como a `listarHorariosComDetalhes`
-        const horarios = await db.HorarioTurma.listarHorariosComDetalhes();
-        res.render('relAulas', {aulas: horarios});
-    } catch(erro) {
-        res.send("Ocorreu um erro ao gerar o relatório: " + erro);
-    }
-});
-
-app.get('/agendamentos/novo', checkRole([1, 2]), async (req, res) => {
-    try {
-        const [laboratorios, turmas, professores, disciplinas, horarios] = await Promise.all([
+        const [laboratorios, turmas, disciplinas, horariosPadrao] = await Promise.all([
             db.Laboratorios.findAll({ raw: true, order: [['labnome', 'ASC']] }),
             db.Turmas.findAll({ raw: true, order: [['turnome', 'ASC']] }),
-            db.Usuarios.findAll({ raw: true, where: { usucargo: 2 }, order: [['usunome', 'ASC']] }),
             db.Disciplinas.findAll({ raw: true, order: [['disc_nome', 'ASC']] }),
             db.HorariosPadrao.findAll({ raw: true, order: [['hp_hora_inicio', 'ASC']] })
         ]);
-        res.render('agendamento_form', { // Sugestão: um nome mais claro para o template
-            laboratorios, turmas, professores, disciplinas, horarios
+
+        res.render('agendamento_form', {
+            laboratorios, turmas, professores, disciplinas, horariosPadrao
         });
     } catch (erro) {
-        res.status(500).send("Houve um erro ao carregar o formulário: " + erro);
+        console.error("Erro ao carregar formulário de agendamento:", erro);
+        res.status(500).send("Houve um erro ao carregar o formulário.");
     }
 });
 
-app.post('/agendamentos', checkRole([1, 2]), async (req, res) => {
+app.post('/aulas', checkRole([1, 2]), async (req, res) => {
     try {
-        const { turma_id, disciplina_id, professor_id, laboratorio_id, dia_semana, horario_id } = req.body;
-        await db.HorarioTurma.create({
-            ht_turma_id_fk: turma_id,
-            ht_disciplina_id_fk: disciplina_id,
-            ht_professor_usuid_fk: professor_id,
-            ht_laboratorio_id_fk: laboratorio_id,
-            ht_dia_semana: dia_semana,
-            ht_horario_padrao_id_fk: horario_id
+
+        const { laboratorio_id, professor_id, turma_id, disciplina_id, horario_id, data, tema } = req.body;
+
+        // --- VALIDAÇÃO DA DATA ---
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        const dataMinima = new Date(hoje);
+        dataMinima.setDate(hoje.getDate() + 2);
+
+        const dataMaxima = new Date(hoje);
+        dataMaxima.setDate(hoje.getDate() + 30);
+
+        const dataEnviada = new Date(data + 'T00:00:00'); //
+
+        if (dataEnviada < dataMinima || dataEnviada > dataMaxima) {
+            return res.status(400).send("Data de agendamento inválida. Deve ser entre 2 e 30 dias a partir de hoje.");
+        }
+
+        const conflito = await db.Aulas.findOne({
+            where: {
+                aula_data: data,
+                aula_horario_padrao_id_fk: horario_id,
+                aula_laboratorio_id_fk: laboratorio_id
+            }
         });
+
+        if (conflito) {
+            return res.status(409).send("Conflito de horário. Este laboratório já está reservado nesta data e horário. <a href='/aulas/nova'>Tentar novamente</a>");
+        }
+
+        await db.Aulas.create({
+            aula_laboratorio_id_fk: laboratorio_id,
+            aula_professor_usuid_fk: professor_id,
+            aula_turma_id_fk: turma_id,
+            aula_disciplina_id_fk: disciplina_id,
+            aula_horario_padrao_id_fk: horario_id,
+            aula_data: data,
+            aula_tema: tema
+        });
+
         res.redirect('/');
+
     } catch (erro) {
-        res.send("Houve um erro ao agendar o horário: " + erro);
+        console.error("Erro ao agendar aula:", erro);
+         res.status(500).send("Houve um erro ao agendar a aula: " + erro.message);
     }
 });
 
