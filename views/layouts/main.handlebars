@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Berzelius - Gestão Laboratorial</title>
     <link rel="stylesheet" href="/css/bEstilos02.css">
-
     {{{_sections.styles}}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 <div id="interface">
@@ -33,6 +33,18 @@
             </ul>
         </nav>
     </header>
+    {{#if error_msg.length}}
+        <script>
+            // Usa o SweetAlert2 que já instalamos para mostrar o erro como um pop-up
+            Swal.fire({
+                icon: 'error',
+                title: 'Acesso Negado!',
+                text: '{{error_msg}}',
+                timer: 4000, // O pop-up desaparece após 4 segundos
+                timerProgressBar: true
+            });
+        </script>
+    {{/if}}
 
     {{{body}}}
 
@@ -41,7 +53,8 @@
     </footer>
 </div>
 
-<script src="/js/app.js"></script>
 <script src="/js/data.js"></script>
+<script src="/js/app.js"></script>
+{{{_sections.scripts}}}
 </body>
 </html>
