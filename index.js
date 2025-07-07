@@ -559,8 +559,19 @@ app.get('/tabela', async (req, res) => {
             }],
             order: [['eleid', 'ASC']]
         });
+
         const elementosSimples = todosOsElementos.map(el => el.get({ plain: true}));
-        res.render('tabela', {elementos: elementosSimples });
+
+        const classMap = {
+            1: 'nMetais', 2: 'alcalinos', 3: 'terrosos', 4: 'metais',
+            5: 'sMetais', 6: 'representativos', 7: 'nobres',
+            8: 'lant', 9: 'acti'
+        };
+
+        res.render('tabela', {
+            elementos: elementosSimples,
+            classMapJSON: JSON.stringify(classMap)
+        });
     } catch (erro) {
         console.error("Erro ao Carregar a tabela periódica: " + erro);
         res.status(500).send("Erro ao carregar o tabela periódica: " + erro);
@@ -612,6 +623,22 @@ app.get('/vidrarias', async (req, res) => {
        console.error("Erro ao carregar a página de vidrarias:", erro);
        res.status(500).send("Erro ao buscar vidrarias: " + erro);
    }
+});
+
+app.get('/api/vidrarias/:id', async (req, res) => {
+    try {
+        const vidrariaId = req.params.id;
+        const vidraria = await db.Vidrarias.findByPk(vidrariaId);
+
+        if (vidraria) {
+            res.json(vidraria); // Se encontrou, responde com os dados em JSON
+        } else {
+            res.status(404).json({ error: 'Vidraria não encontrada' });
+        }
+    } catch (erro) {
+        console.error("Erro ao buscar detalhes da vidraria:", erro);
+        res.status(500).json({ error: 'Erro interno no servidor' });
+    }
 });
 
 app.get('/aulas/nova', checkRole([1, 2]), async (req, res) => {
