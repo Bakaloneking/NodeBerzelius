@@ -40,31 +40,42 @@ window.addEventListener('DOMContentLoaded', () => {
     // Pega a referência ao <select> de data pelo ID
     const selectData = document.getElementById('cData');
 
-    // Limpa quaisquer opções que possam existir previamente no HTML
-    selectData.innerHTML = '';
+    if (selectData) {
+        selectData.innerHTML = ''; // Limpa opções antigas
 
-    // Loop de 7 dias (domingo a sábado) para criar as opções
-    for (let i = 0; i < 7; i++) {
-        const dataOpcao = new Date(inicioSemana);
-        dataOpcao.setDate(inicioSemana.getDate() + i);
+        // Cria a opção placeholder
+        const placeholder = document.createElement('option');
+        placeholder.value = "";
+        placeholder.textContent = "Selecione uma data válida";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        selectData.appendChild(placeholder);
 
-        // Formata a data no formato DD/MM/AA
-        const dia = String(dataOpcao.getDate()).padStart(2, '0');
-        const mes = String(dataOpcao.getMonth() + 1).padStart(2, '0');
-        const ano = dataOpcao.getFullYear().toString().slice(-2); // Pega os 2 últimos dígitos do ano
-        const valorOpcao = `${dia}/${mes}/${ano}`;
+        const hoje = new Date();
+        const dataMinima = new Date();
+        dataMinima.setDate(hoje.getDate() + 2); // Data mínima: hoje + 2 dias
 
-        // Formata o nome do dia da semana em português (ex: "Segunda-feira")
-        // Intl.DateTimeFormat é a forma moderna e correta de lidar com nomes de datas
-        const nomeDiaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(dataOpcao);
-        const textoOpcao = `${nomeDiaSemana.charAt(0).toUpperCase() + nomeDiaSemana.slice(1)} - ${valorOpcao}`;
+        const dataMaxima = new Date();
+        dataMaxima.setDate(hoje.getDate() + 30); // Data máxima: hoje + 30 dias
 
-        // Cria o elemento <option>
-        const optionElement = document.createElement('option');
-        optionElement.value = valorOpcao;
-        optionElement.textContent = textoOpcao;
+        // Loop de hoje+2 até hoje+30
+        for (let d = dataMinima; d <= dataMaxima; d.setDate(d.getDate() + 1)) {
+            const dataOpcao = new Date(d); // Cria uma cópia para não alterar o 'd' do loop
 
-        // Adiciona a nova <option> ao <select>
-        selectData.appendChild(optionElement);
+            const dia = String(dataOpcao.getDate()).padStart(2, '0');
+            const mes = String(dataOpcao.getMonth() + 1).padStart(2, '0');
+            const ano = dataOpcao.getFullYear(); // Usar ano com 4 dígitos é mais seguro
+
+            const valorOpcao = `${ano}-${mes}-${dia}`; // Formato AAAA-MM-DD para o back-end
+
+            const nomeDiaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' }).format(dataOpcao);
+            const textoOpcao = `${nomeDiaSemana.charAt(0).toUpperCase() + nomeDiaSemana.slice(1)} - ${dia}/${mes}/${ano}`;
+
+            const optionElement = document.createElement('option');
+            optionElement.value = valorOpcao;
+            optionElement.textContent = textoOpcao;
+
+            selectData.appendChild(optionElement);
+        }
     }
 });

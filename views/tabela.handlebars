@@ -3,8 +3,8 @@
     <link rel="stylesheet" href="/css/bTabela.css">
 {{/section}}
 
-<section id="corpo">
-    <article class="tabelaCompleta">
+<section id="corpo" class="tabela-page-container">
+    <article class="tabelaCompleta" data-classmap="{{classMapJSON}}">
         {{{ renderTabelaPeriodica elementos }}}
     </article>
 
@@ -14,9 +14,5 @@
 </section>
 
 {{#section 'scripts'}}
-    <script>
-        // Recebe o mapa de classes enviado pelo servidor
-        const classMap = {{{classMapJSON}}};
-    </script>
     <script src="/js/tabela.js"></script>
 {{/section}}

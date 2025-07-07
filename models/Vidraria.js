@@ -1,6 +1,8 @@
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Vidrarias extends Model {}
+    class Vidrarias extends Model {
+        static associate(models) {}
+    }
     Vidrarias.init({
         vid_id: {
             type: DataTypes.INTEGER.UNSIGNED,

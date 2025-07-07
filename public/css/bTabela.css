@@ -49,8 +49,10 @@
 
 #corpo {
     display: flex; /* Use flexbox to align children side by side */
+    flex-direction: column;
     justify-content: space-between; /* Space between the aside and article */
-    align-items: flex-start; /* Align items at the start */
+    align-items: center; /* Align items at the start */
+    gap: 30px;
     margin: 20px; /* Add margin around the section */
 }
 
@@ -156,61 +158,61 @@ ol.principal > li .simboloQuimico {
     visibility: visible;
 }
 
-li.nMetais {
+li.nMetais, section.nMetais {
     background: var(--naoMetais);
     filter: none;
     transition: border-color 0.5s ease-in-out;
 }
 
-li.nobres {
+li.nobres, section.nobres {
     background: var(--gasesNobres);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.alcalinos {
+li.alcalinos, section.alcalinos {
     background: var(--metaisAlcalinos);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.terrosos {
+li.terrosos, section.terrosos {
     background: var(--metaisAlcalinosTerrosos);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.metais {
+li.metais, section.metais {
     background: var(--transicaoExterna);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.sMetais {
+li.sMetais, section.sMetais {
     background: var(--semiMetais);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.representativos {
+li.representativos, section.representativos {
     background: var(--representativos);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.lant {
+li.lant, section.lant {
     background: var(--lantanideos);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.acti {
+li.acti, section.acti {
     background: var(--actinideos);
     filter: none;
     transition: filter 0.3s;
 }
 
-li.halogenios{
+li.halogenios, section.halogenios {
     background: var(--halogenios);
     filter: none;
     transition: filter 0.3s;
@@ -222,13 +224,6 @@ li > a.lEle {
     font-weight: normal; /* Set font weight to normal */
     font-style: normal; /* Set font style to normal */
 }
-
-/*li a:hover {*/
-/*    color: initial; !* Maintain the same color on hover *!*/
-/*    text-decoration: none; !* Keep the text without underline *!*/
-/*    font-weight: normal; !* Keep font weight the same *!*/
-/*    font-style: normal; !* Keep font style the same *!*/
-/*}*/
 
 li > a.lEle:visited {
     color: initial; /* Maintain the same color on hover */
@@ -293,6 +288,57 @@ aside#elemento {
     color: black;
     user-select: text;
     max-width: 100%;
+}
+
+#elemento-detalhes-container {
+    width: 100%;
+    max-width: 900px; /* Limita a largura da caixa de detalhes */
+    margin: 20px auto;
+    display: block; /* Começa escondido, o JS muda para 'flex' */
+}
+
+/* O card interno que se torna um flex container */
+.detalhe-elemento-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 25px;
+    padding: 25px;
+    background-color: #f0f8ff;
+    border: 1px solid #b0e0e6;
+    border-radius: 10px;
+}
+
+.detalhe-elemento-card #elemento-info-box {
+    flex-shrink: 0; /* Impede que a caixa do elemento encolha */
+}
+
+/* Caixa da descrição */
+.detalhe-elemento-card #conteudo-detalhe {
+    flex-grow: 1; /* Permite que a descrição ocupe o espaço restante */
+}
+
+/* Estilos para a "imagem" do elemento na caixa de detalhes */
+#elemento-info-box section {
+    width: 140px;
+    height: 160px;
+    border-radius: 12px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#elemento-info-box section strong {
+    position: absolute; top: 8px; left: 8px; font-size: 1.2em;
+}
+#elemento-info-box section .simboloQuimico {
+    font-size: 4em; font-weight: bold; line-height: 1;
+}
+#elemento-info-box section .nomesMedios {
+    font-size: 1.1em; font-weight: 600;
 }
 
 /* General styles for the article */
