@@ -5,7 +5,7 @@
 <section id="corpo">
         <div class="login-container">
             <h2>Login</h2>
-            <form action="/login" method="POST">
+            <form id="loginForm" method="POST">
                 <div class="input-group">
                     <label for="email">Email</label>
                     <input type="text" id="email" name="email" required>
@@ -18,3 +18,7 @@
             </form>
         </div>
 </section>
+
+{{#section 'scripts'}}
+    <script src="/js/auth.js"></script>
+{{/section}}

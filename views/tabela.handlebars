@@ -5,7 +5,18 @@
 
 <section id="corpo">
     <article class="tabelaCompleta">
-        {{! Chama o nosso helper para desenhar a tabela, passando a lista de elementos }}
         {{{ renderTabelaPeriodica elementos }}}
     </article>
+
+    <div id="elemento-detalhes-container">
+
+    </div>
 </section>
+
+{{#section 'scripts'}}
+    <script>
+        // Recebe o mapa de classes enviado pelo servidor
+        const classMap = {{{classMapJSON}}};
+    </script>
+    <script src="/js/tabela.js"></script>
+{{/section}}

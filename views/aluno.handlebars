@@ -35,12 +35,13 @@
         </div>
     </aside>
     <article id="conteudo">
-        <h1>Minha Grade de Horários</h1>
+        <h1>Minhas Próximas Aulas Agendadas</h1>
 
         {{#if horarios.length}}
             <table class="schedule-table">
                 <thead>
                 <tr>
+                    <th>Data</th>
                     <th>Dia da Semana</th>
                     <th>Horário</th>
                     <th>Disciplina</th>
@@ -51,13 +52,8 @@
                 <tbody>
                 {{#each horarios}}
                     <tr>
-                        <td>
-                            {{#if (eq this.ht_dia_semana 1)}}Segunda-feira{{/if}}
-                            {{#if (eq this.ht_dia_semana 2)}}Terça-feira{{/if}}
-                            {{#if (eq this.ht_dia_semana 3)}}Quarta-feira{{/if}}
-                            {{#if (eq this.ht_dia_semana 4)}}Quinta-feira{{/if}}
-                            {{#if (eq this.ht_dia_semana 5)}}Sexta-feira{{/if}}
-                        </td>
+                        <td>{{this.data_formatada}}</td>
+                        <td>{{this.dia_semana_nome}}</td>
                         <td>{{this.Horario}}</td>
                         <td>{{this.Disciplina}}</td>
                         <td>{{this.Professor}}</td>
@@ -67,7 +63,7 @@
                 </tbody>
             </table>
         {{else}}
-            <p>Ainda não há horários definidos para a sua turma.</p>
+            <p>Você não possui aulas agendadas para os próximos dias.</p>
         {{/if}}
     </article>
 </section>

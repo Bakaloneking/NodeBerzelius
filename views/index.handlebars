@@ -52,10 +52,9 @@
 </section>
 
 {{#section 'scripts'}}
-{{! Embeda os dados do servidor em uma variável JavaScript }}
 <script>
     const agendamentos = {{{agendamentosJSON}}};
 </script>
-{{! Carrega o nosso novo script que controlará o calendário }}
 <script src="/js/calendario.js"></script>
+<script src="/js/auth.js"></script>
 {{/section}}
